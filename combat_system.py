@@ -2,7 +2,7 @@
 COMP 163 - Project 3: Quest Chronicles
 Combat System Module - Starter Code
 
-Name: [Your Name Here]
+Name: Noble McGregor
 
 AI Usage: [Document any AI assistance used]
 
@@ -15,7 +15,7 @@ from custom_exceptions import (
     CharacterDeadError,
     AbilityOnCooldownError
 )
-
+import random
 # ============================================================================
 # ENEMY DEFINITIONS
 # ============================================================================
@@ -32,8 +32,26 @@ def create_enemy(enemy_type):
     Returns: Enemy dictionary
     Raises: InvalidTargetError if enemy_type not recognized
     """
-    # TODO: Implement enemy creation
-    # Return dictionary with: name, health, max_health, strength, magic, xp_reward, gold_reward
+    enemy_stats = {
+        "Goblin": {"health": 50, "strength": 8, "magic": 2, "xp_reward": 25, "gold_reward": 10},
+        "Orc": {"health": 80, "strength": 12, "magic": 5, "xp_reward": 50, "gold_reward": 25},
+        "Dragon": {"health": 200, "strength": 25, "magic": 15, "xp_reward": 200, "gold_reward": 100}
+    }
+    enemy_types = enemy_type.lower()
+
+    if enemy_type not in enemy_stats:
+        raise InvalidTargetError(f"{enemy_type} is not a valid enemy, check for capitalization")
+    stats = enemy_stats[enemy_type]
+    enemy = {
+        "name": enemy_type.capitalize(),
+        "health": stats["health"],
+        "max_health": stats["health"],
+        "strength": stats["strength"],
+        "magic": stats["magic"],
+        "xp_reward": stats["xp_reward"],
+        "gold_reward": stats["gold_reward"]
+    }
+    return enemy
     pass
 
 def get_random_enemy_for_level(character_level):
@@ -46,9 +64,17 @@ def get_random_enemy_for_level(character_level):
     
     Returns: Enemy dictionary
     """
-    # TODO: Implement level-appropriate enemy selection
-    # Use if/elif/else to select enemy type
-    # Call create_enemy with appropriate type
+    if character_level <= 2:
+        enemy_type = "goblin"
+    elif 3 <= character_level <= 5:
+        enemy_type = "orc"
+    else:
+        enemy_type = "dragon"
+    
+    try:
+        return create_enemy(enemy_type)
+    except InvalidTargetError as e:
+        raise InvalidTargetError(f"No enemy for character level {character_level}: {e}")
     pass
 
 # ============================================================================
@@ -64,10 +90,10 @@ class SimpleBattle:
     
     def __init__(self, character, enemy):
         """Initialize battle with character and enemy"""
-        # TODO: Implement initialization
-        # Store character and enemy
-        # Set combat_active flag
-        # Initialize turn counter
+        self.character = character
+        self.enemy = enemy
+        self.combat_active = True
+        self.turn_counter = 1
         pass
     
     def start_battle(self):
@@ -79,10 +105,29 @@ class SimpleBattle:
         
         Raises: CharacterDeadError if character is already dead
         """
-        # TODO: Implement battle loop
-        # Check character isn't dead
-        # Loop until someone dies
-        # Award XP and gold if player wins
+        if self.character["health"] <= 0:
+            raise CharacterDeadError(f"{self.character["name"]} is dead")
+
+        while self.combat_active:
+            self.enemy["health"] -= self.character["strength"]
+            if self.enemy["health"] <= 0:
+                self.combat_active = False
+                return {
+                    f"{self.character["name"]} has won the battle"
+                    f"You gained: {self.enemy["xp_reward"]} xp"
+                    f"You gained: {self.enemy["gold_reward"]} gold"
+                }
+            
+            self.character["health"] -= self.enemy["strength"]
+            if self.character["health"] <= 0:
+                self.combat_active = False
+                return {
+                    f"{self.character["name"]} has lost the battle"
+                    "You gained: 0 xp"
+                    "You gained: 0 gold"
+                }
+            
+            self.turn_counter += 1
         pass
     
     def player_turn(self):
@@ -93,14 +138,39 @@ class SimpleBattle:
         1. Basic Attack
         2. Special Ability (if available)
         3. Try to Run
-        
         Raises: CombatNotActiveError if called outside of battle
         """
-        # TODO: Implement player turn
-        # Check combat is active
-        # Display options
-        # Get player choice
-        # Execute chosen action
+        if not self.combat_active:
+            raise CombatNotActiveError("Cannot take action, combat is not active")
+        print("Player's Turn")
+        print("1. Basic Attack")
+        print("2. Special Ability")
+        print("3. Try to Run")
+
+        player_choice = input("Choose an action between 1, 2, and 3")
+        if player_choice == "1":
+            damage = self.character["strength"]
+            self.enemy["health"] -= damage
+            print(f"{self.character["name"]} dealt {damage} damage to {self.enemy["name"]}")
+
+        elif player_choice == "2":
+            if self.character.get("ability_cooldown", False):
+                raise AbilityOnCooldownError(f"{self.character["name"]}s ability is on cooldown")
+            else:
+                damage = self.character["magic"] + self.character["strength"] * 2
+                self.enemy["health"] -= damage
+                self.character["ability_cooldown"] = True
+                print(f"{self.character["name"]} used their special ability and dealt {damage} damage to {self.enemy["name"]}")
+
+        elif player_choice == "3":
+            if random.random <= 0.5:
+                print(f"{self.character["name"]} succesfully escaped")
+                self.combat_active = False
+                return {f"Nobody won, xp gained: 0, gold gained: 0"}
+            else:
+                print(f"{self.character["name"]} failed to escape")
+        else:
+            print("please select an option between 1, 2, and 3")
         pass
     
     def enemy_turn(self):
@@ -111,6 +181,11 @@ class SimpleBattle:
         
         Raises: CombatNotActiveError if called outside of battle
         """
+        if not self.combat_active:
+            raise CombatNotActiveError("Cannot take action, combat is not active")
+        print("Enemy's Turn")
+        damage = self.enemy["strength"]
+
         # TODO: Implement enemy turn
         # Check combat is active
         # Calculate damage
