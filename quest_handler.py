@@ -385,6 +385,7 @@ def validate_quest_prerequisites(quest_data_dict):
     return True
     pass
 
+
 # ============================================================================
 # TESTING
 # ============================================================================
@@ -393,29 +394,29 @@ if __name__ == "__main__":
     print("=== QUEST HANDLER TEST ===")
     
     # Test data
-    # test_char = {
-    #     'level': 1,
-    #     'active_quests': [],
-    #     'completed_quests': [],
-    #     'experience': 0,
-    #     'gold': 100
-    # }
+    test_char = {
+         'level': 1,
+         'active_quests': [],
+         'completed_quests': [],
+         'experience': 0,
+         'gold': 100
+    }
     #
-    # test_quests = {
-    #     'first_quest': {
-    #         'quest_id': 'first_quest',
-    #         'title': 'First Steps',
-    #         'description': 'Complete your first quest',
-    #         'reward_xp': 50,
-    #         'reward_gold': 25,
-    #         'required_level': 1,
-    #         'prerequisite': 'NONE'
-    #     }
-    # }
+    test_quests = {
+         'first_quest': {
+             'quest_id': 'first_quest',
+             'title': 'First Steps',
+             'description': 'Complete your first quest',
+             'reward_xp': 50,
+             'reward_gold': 25,
+             'required_level': 1,
+             'prerequisite': 'NONE'
+        }
+    }
     #
-    # try:
-    #     accept_quest(test_char, 'first_quest', test_quests)
-    #     print("Quest accepted!")
-    # except QuestRequirementsNotMetError as e:
-    #     print(f"Cannot accept: {e}")
+    try:
+        accept_quest(test_char, 'first_quest', test_quests)
+        print("Quest accepted!")
+    except QuestRequirementsNotMetError as e:
+        print(f"Cannot accept: {e}")
 
