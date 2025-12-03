@@ -235,8 +235,49 @@ def equip_armor(character, item_id, item_data):
         ItemNotFoundError if item not in inventory
         InvalidItemTypeError if item type is not 'armor'
     """
-    # TODO: Implement armor equipping
-    # Similar to equip_weapon but for armor
+    inventory = character.get("inventory", [])
+
+    if item_id not in inventory:
+        raise ItemNotFoundError(f"{item_id} not found in inventory")
+
+    if item_id not in item_data:
+        raise ItemNotFoundError(f"{item_id} not found in game data")
+    item = item_data[item_id]
+
+    if item["type"].lower() != "armor":
+        raise InvalidItemTypeError(f"{item_id} is not armor")
+
+    if "equipped_armor" in character and character["equipped_armor"]:
+        old_armor_id = character["equipped_armor"]
+        old_armor = item_data.get(old_armor_id)
+
+        if old_armor and "effect" in old_armor:
+            stat, value = old_armor["effect"].split(":")
+            character[stat] -= int(value)
+
+        inventory.append(old_armor_id)
+
+    effect_str = item.get("effect")
+    if not effect_str or ":" not in effect_str:
+        raise InvalidItemTypeError(f"Invalid item type for armor {item_id}")
+
+    stat, value = effect_str.split(":", 1)
+    stat = stat.strip().lower()
+    try:
+        value = int(value.strip())
+    except ValueError:
+        raise InvalidItemTypeError(f"Invalid value in effect for armor {item_id}")
+    if stat in character:
+        character[stat] += value
+    else:
+        character[stat] = value
+
+    character["equipped_armor"] = item_id
+
+    inventory.remove(item_id)
+
+    return f"{character["name"]} equipped {item["name"]} (+{value} {stat})."
+
     pass
 
 def unequip_weapon(character):
@@ -246,11 +287,24 @@ def unequip_weapon(character):
     Returns: Item ID that was unequipped, or None if no weapon equipped
     Raises: InventoryFullError if inventory is full
     """
-    # TODO: Implement weapon unequipping
-    # Check if weapon is equipped
-    # Remove stat bonuses
-    # Add weapon back to inventory
-    # Clear equipped_weapon from character
+    inventory = character.get("inventory", [])
+    equipped = character.get("equipped_weapon")
+
+    if not equipped:
+        return None 
+    if len(inventory) >= MAX_INVENTORY_SIZE:
+        raise InventoryFullError("Inventory is full")
+
+    if "equipped_weapon_effect" in character:
+        stat, value = character["equipped_weapon_effect"].split(":")
+        character[stat] -= int(value)
+
+    inventory.append(equipped)
+
+    character["equipped_weapon"] = None
+    character.pop("equipped_weapon_effect", None)
+
+    return equipped
     pass
 
 def unequip_armor(character):
@@ -260,7 +314,25 @@ def unequip_armor(character):
     Returns: Item ID that was unequipped, or None if no armor equipped
     Raises: InventoryFullError if inventory is full
     """
-    # TODO: Implement armor unequipping
+    inventory = character.get("inventory", [])
+    equipped = character.get("equipped_armor")
+
+    if not equipped:
+        return None  
+
+    if len(inventory) >= MAX_INVENTORY_SIZE:
+        raise InventoryFullError("Inventory is full")
+
+    if "equipped_armor_effect" in character:
+        stat, value = character["equipped_armor_effect"].split(":")
+        character[stat] -= int(value)
+
+    inventory.append(equipped)
+
+    character["equipped_armor"] = None
+    character.pop("equipped_armor_effect", None)
+
+    return equipped
     pass
 
 # ============================================================================
