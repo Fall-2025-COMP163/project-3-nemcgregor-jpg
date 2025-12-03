@@ -249,9 +249,13 @@ class SimpleBattle:
         
         Returns: True if escaped, False if failed
         """
-        # TODO: Implement escape attempt
-        # Use random number or simple calculation
-        # If successful, set combat_active to False
+        escape = random.random() < 0.5
+
+        if escape:
+            self.combat_active = False
+            return True
+        else:
+            return False
         pass
 
 # ============================================================================
@@ -271,36 +275,74 @@ def use_special_ability(character, enemy):
     Returns: String describing what happened
     Raises: AbilityOnCooldownError if ability was used recently
     """
-    # TODO: Implement special abilities
-    # Check character class
-    # Execute appropriate ability
-    # Track cooldowns (optional advanced feature)
+    if character.get("ability_cooldown", False):
+                raise AbilityOnCooldownError("Ability is on cooldown")
+    character_class = character.get("class")
+    
+    result = ""
+
+    if character_class == "Warrior":
+        damage = character["strength"] * 2
+        enemy["health"] -= damage
+        result = f"{character["name"]} used power strike and dealt {damage} damage to {enemy["name"]}"
+    
+    elif character_class == "Mage":
+        damage = character["magic"] * 2
+        enemy["health"] -= damage
+        result = f"{character["name"]} casts fireball and dealt {damage} damage to {enemy["name"]}"
+
+    elif character_class == "Rogue":
+        if random.random() < 0.5:  
+            damage = character["strength"] * 3
+            enemy["health"] -= damage
+            result = f"{character["name"]} used critical strike and dealth {damage} damage to {enemy["name"]}"
+        else:
+            result = f"{character["name"]} missed their critical strike"
+
+    elif character_class == "Cleric":
+        healing = 30
+        character["health"] += healing
+        result = f"{character["name"]} used heal, {healing} health was restored"
+
+    else:
+        result = f"{character["name"]} does not have a special ability"
+    character["ability_cooldown"] = True
+    return result
+   
     pass
 
 def warrior_power_strike(character, enemy):
     """Warrior special ability"""
-    # TODO: Implement power strike
-    # Double strength damage
+    damage = character["strength"] * 2
+    enemy["health"] -= damage
+    result = f"{character["name"]} used power strike and dealt {damage} damage to {enemy["name"]}"
     pass
 
 def mage_fireball(character, enemy):
     """Mage special ability"""
-    # TODO: Implement fireball
-    # Double magic damage
+    damage = character["magic"] * 2
+    enemy["health"] -= damage
+    result = f"{character["name"]} casts fireball and dealt {damage} damage to {enemy["name"]}"
     pass
 
 def rogue_critical_strike(character, enemy):
     """Rogue special ability"""
-    # TODO: Implement critical strike
-    # 50% chance for triple damage
+    if random.random() < 0.5:  
+            damage = character["strength"] * 3
+            enemy["health"] -= damage
+            result = f"{character["name"]} used critical strike and dealth {damage} damage to {enemy["name"]}"
+    else:
+        result = f"{character["name"]} missed their critical strike"
     pass
 
 def cleric_heal(character):
     """Cleric special ability"""
-    # TODO: Implement healing
-    # Restore 30 HP (not exceeding max_health)
+    healing = 30
+    health = min(character["health"] + healing, character["max_health"])
+    restored_health = health - character["health"]
+    character["health"] = health
+    return f"{character["name"]} used heal, {healing} health was restored."
     pass
-
 # ============================================================================
 # COMBAT UTILITIES
 # ============================================================================
