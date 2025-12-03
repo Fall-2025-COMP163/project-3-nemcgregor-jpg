@@ -240,7 +240,7 @@ def gain_experience(character, xp_amount):
         character["max_health"] += 10
         character["strength"] += 2
         character["magic"] += 2
-        character["health"] += character["max_health"]
+        character["health"] = character["max_health"]
 
     return character
     pass
@@ -290,7 +290,7 @@ def is_character_dead(character):
     else:
         return False
     pass
-
+    
 def revive_character(character):
     """
     Revive a dead character with 50% health
