@@ -4,7 +4,7 @@ Game Data Module - Starter Code
 
 Name: Noble McGregor
 
-AI Usage: [Document any AI assistance used]
+AI Usage: AI helped me debug and understand how exceptions worked in this case
 
 This module handles loading and validating game data from text files.
 """
@@ -188,6 +188,7 @@ def validate_quest_data(quest_dict):
 
     return True
     pass
+
 
 def validate_item_data(item_dict):
     """

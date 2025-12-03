@@ -4,7 +4,7 @@ Combat System Module - Starter Code
 
 Name: Noble McGregor
 
-AI Usage: [Document any AI assistance used]
+AI Usage: AI helped me debug and use more with functions
 
 Handles combat mechanics
 """
@@ -343,7 +343,6 @@ def cleric_heal(character):
     character["health"] = health
     return f"{character["name"]} used heal, {healing} health was restored."
     pass
-
 # ============================================================================
 # COMBAT UTILITIES
 # ============================================================================

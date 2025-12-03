@@ -2,9 +2,9 @@
 COMP 163 - Project 3: Quest Chronicles
 Quest Handler Module - Starter Code
 
-Name: [Your Name Here]
+Name: Noble McGregor
 
-AI Usage: [Document any AI assistance used]
+AI Usage: AI helped me debug and with how to use empty lists and dictionaries
 
 This module handles quest management, dependencies, and completion.
 """
@@ -384,7 +384,6 @@ def validate_quest_prerequisites(quest_data_dict):
                 )
     return True
     pass
-
 
 # ============================================================================
 # TESTING

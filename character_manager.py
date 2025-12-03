@@ -117,6 +117,7 @@ def save_character(character, save_directory="data/save_games"):
         raise
     pass
 
+
 def load_character(character_name, save_directory="data/save_games"):
     """
     Load character from save file
@@ -191,7 +192,6 @@ def list_saved_characters(save_directory="data/save_games"):
     
     return saved_character
     pass
-
 
 def delete_character(character_name, save_directory="data/save_games"):
     """
@@ -290,7 +290,7 @@ def is_character_dead(character):
     else:
         return False
     pass
-
+    
 def revive_character(character):
     """
     Revive a dead character with 50% health

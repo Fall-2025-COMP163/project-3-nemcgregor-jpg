@@ -4,7 +4,7 @@ Inventory System Module - Starter Code
 
 Name: Noble McGregor
 
-AI Usage: [Document any AI assistance used]
+AI Usage: AI helped me debug and how to set up lists and dictionaries that can be interacted with
 
 This module handles inventory management, item usage, and equipment.
 """
@@ -100,10 +100,15 @@ def clear_inventory(character):
     inventory = character.get("inventory", [])
     removed_items = list(inventory)
     character["inventory"] = []
+<<<<<<< HEAD
 
     return removed_items
     pass
+=======
+>>>>>>> df9dc87c2d72db72564344083843e99350feb74d
 
+    return removed_items
+    pass
 # ============================================================================
 # ITEM USAGE
 # ============================================================================
@@ -340,20 +345,17 @@ def unequip_armor(character):
 # SHOP SYSTEM
 # ============================================================================
 
-def purchase_item(character, item_id, item_data):
+def parse_item_effect(effect_string):
     """
-    Purchase an item from a shop
+    Parse item effect string into stat name and value
     
     Args:
-        character: Character dictionary
-        item_id: Item to purchase
-        item_data: Item information with 'cost' field
+        effect_string: String in format "stat_name:value"
     
-    Returns: True if purchased successfully
-    Raises:
-        InsufficientResourcesError if not enough gold
-        InventoryFullError if inventory is full
+    Returns: Tuple of (stat_name, value)
+    Example: "health:20" → ("health", 20)
     """
+<<<<<<< HEAD
     if "inventory" not in character:
         character["inventory"] = []
     inventory = character["inventory"]
@@ -372,20 +374,44 @@ def purchase_item(character, item_id, item_data):
     inventory.append(item_id)
 
     return True
+=======
+    stat_name, value_str = effect_string.split(":", 1)
+    value = int(value_str.strip())
+    return stat_name.strip().lower(), value
+>>>>>>> df9dc87c2d72db72564344083843e99350feb74d
     pass
 
-def sell_item(character, item_id, item_data):
+def apply_stat_effect(character, stat_name, value):
     """
-    Sell an item for half its purchase cost
+    Apply a stat modification to character
+    
+    Valid stats: health, max_health, strength, magic
+    
+    Note: health cannot exceed max_health
+    """
+    if stat_name not in ["health", "max_health", "strength", "magic"]:
+        raise ValueError(f"Invalid stat: {stat_name}")
+
+    if stat_name == "health":
+        character["health"] = min(
+            character.get("health", 0) + value,
+            character.get("max_health", character.get("health", 0))
+        )
+    else:
+        character[stat_name] = character.get(stat_name, 0) + value
+    pass
+
+def display_inventory(character, item_data_dict):
+    """
+    Display character's inventory in formatted way
     
     Args:
         character: Character dictionary
-        item_id: Item to sell
-        item_data: Item information with 'cost' field
+        item_data_dict: Dictionary of all item data
     
-    Returns: Amount of gold received
-    Raises: ItemNotFoundError if item not in inventory
+    Shows item names, types, and quantities
     """
+<<<<<<< HEAD
     if "inventory" not in character:
         character["inventory"] = []
     inventory = character["inventory"]
@@ -398,6 +424,31 @@ def sell_item(character, item_id, item_data):
     sell_value = item_data.get("cost", 0) // 2
     character["gold"] = character.get("gold", 0) + sell_value
     return sell_value
+=======
+    inventory = character.get("inventory", [])
+    if not inventory:
+        print(f"{character.get('name', 'Unknown')} has an empty inventory.")
+        return
+
+    item_counts = {}
+    for item_id in inventory:
+        if item_id in item_counts:
+            item_counts[item_id] += 1
+        else:
+            item_counts[item_id] = 1
+
+
+    print(f"\n{character.get('name', 'Unknown')}s Inventory:")
+    print("-" * 40)
+
+    for item_id, count in item_counts.items():
+        item_info = item_data_dict.get(item_id, {})
+        item_name = item_info.get("name", item_id)
+        item_type = item_info.get("type", "Unknown")
+        print(f"{item_name} ({item_type}) x{count}")
+
+    print("-" * 40)
+>>>>>>> df9dc87c2d72db72564344083843e99350feb74d
     pass
 
 # ============================================================================

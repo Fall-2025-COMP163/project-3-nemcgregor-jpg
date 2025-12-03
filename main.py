@@ -4,15 +4,11 @@ Main Game Module - Starter Code
 
 Name: Noble McGregor
 
-AI Usage: [Document any AI assistance used]
+AI Usage: AI helped me debug and set up this module in accordance with the others
 
 This is the main game file that ties all modules together.
 Demonstrates module integration and complete game flow.
 """
-
-# python -m pytest tests/test_exception_handling.py -v
-# python -m pytest tests/test_module_structure.py -v
-# python -m pytest tests/test_game_integration.py -v
 
 
 
