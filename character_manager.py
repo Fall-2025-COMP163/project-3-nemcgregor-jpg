@@ -117,6 +117,7 @@ def save_character(character, save_directory="data/save_games"):
         raise
     pass
 
+
 def load_character(character_name, save_directory="data/save_games"):
     """
     Load character from save file
@@ -133,6 +134,8 @@ def load_character(character_name, save_directory="data/save_games"):
     """
 
     file_name = os.path.join(save_directory, f"{character_name}_save.txt")
+    if not os.path.exists(file_name):
+        raise CharacterNotFoundError(f"No save file found for {character_name}")
     try:
         with open(file_name, "r", encoding="utf-8") as file:
             lines = file.readlines()
@@ -189,7 +192,6 @@ def list_saved_characters(save_directory="data/save_games"):
     
     return saved_character
     pass
-
 
 def delete_character(character_name, save_directory="data/save_games"):
     """
