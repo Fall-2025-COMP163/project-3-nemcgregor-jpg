@@ -69,7 +69,7 @@ def has_item(character, item_id):
     
     Returns: True if item in inventory, False otherwise
     """
-    # TODO: Implement item check
+    return item_id in character.get("inventory", [])
     pass
 
 def count_item(character, item_id):
@@ -78,8 +78,7 @@ def count_item(character, item_id):
     
     Returns: Integer count of item
     """
-    # TODO: Implement item counting
-    # Use list.count() method
+    return character.get("inventory", []).count(item_id)
     pass
 
 def get_inventory_space_remaining(character):
@@ -88,7 +87,8 @@ def get_inventory_space_remaining(character):
     
     Returns: Integer representing available slots
     """
-    # TODO: Implement space calculation
+    inventory = character.get("inventory", [])
+    return MAX_INVENTORY_SIZE - len(inventory)
     pass
 
 def clear_inventory(character):
@@ -97,11 +97,12 @@ def clear_inventory(character):
     
     Returns: List of removed items
     """
-    # TODO: Implement inventory clearing
-    # Save current inventory before clearing
-    # Clear character's inventory list
-    pass
+    inventory = character.get("inventory", [])
+    removed_items = list(inventory)
+    character["inventory"] = []
 
+    return removed_items
+    pass
 # ============================================================================
 # ITEM USAGE
 # ============================================================================
