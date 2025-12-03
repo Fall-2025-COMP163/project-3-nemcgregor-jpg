@@ -375,11 +375,15 @@ def validate_quest_prerequisites(quest_data_dict):
     Returns: True if all valid
     Raises: QuestNotFoundError if invalid prerequisite found
     """
-    # TODO: Implement prerequisite validation
-    # Check each quest's prerequisite
-    # Ensure prerequisite exists in quest_data_dict
+    for quest_id, quest in quest_data_dict.items():
+        prereq = quest.get("prerequisite")
+        if prereq and prereq != "NONE":
+            if prereq not in quest_data_dict:
+                raise QuestNotFoundError(
+                    f"Quest {quest_id} has invalid prerequisite: {prereq}"
+                )
+    return True
     pass
-
 
 # ============================================================================
 # TESTING
