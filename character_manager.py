@@ -41,8 +41,11 @@ def create_character(name, character_class):
         "Rogue": {"health": 110, "strength": 10, "magic": 7},
         "Cleric": {"health": 90, "strength": 8, "magic": 10}
     }
-    classes = ["Warrior", "Mage", "Rogue", "cleric"]
-
+    classes = ["Warrior", "Mage", "Rogue", "Cleric"]
+    
+    if character_class not in classes:
+        raise InvalidCharacterClassError(f"{character_class} is not a valid class, please choose 'Warrior', 'Mage', 'Rogue', or 'Cleric' ")
+   
     stats = base_stats[character_class]
     
     character = {
@@ -60,8 +63,7 @@ def create_character(name, character_class):
         "completed_quests": []
     }
     
-    if character_class not in classes:
-        raise InvalidCharacterClassError(f"{character_class} is not a valid class, please choose 'Warrior', 'Mage', 'Rogue', or 'Cleric' ")
+    return character
     pass
 
 def save_character(character, save_directory="data/save_games"):
@@ -106,7 +108,7 @@ def save_character(character, save_directory="data/save_games"):
             file.write(f"Experience: {character['experience']}\n")
             file.write(f"Gold: {character['gold']}\n")
             file.write(f"Inventory: {','.join(character['inventory'])}\n")
-            file.write(f"Active_Quest: {','.join(character['active_quests'])}\n")
+            file.write(f"Active_Quests: {','.join(character['active_quests'])}\n")
             file.write(f"Completed_Quests: {','.join(character['completed_quests'])}\n")
         
         return True
