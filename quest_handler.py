@@ -262,10 +262,13 @@ def get_quest_completion_percentage(character, quest_data_dict):
     
     Returns: Float between 0 and 100
     """
-    # TODO: Implement percentage calculation
-    # total_quests = len(quest_data_dict)
-    # completed_quests = len(character['completed_quests'])
-    # percentage = (completed / total) * 100
+    total_quests = len(quest_data_dict)
+    if total_quests == 0:
+        return 0.0
+
+    completed_quests = len(character.get("completed_quests", []))
+    percentage = (completed_quests / total_quests) * 100
+    return float(percentage)
     pass
 
 def get_total_quest_rewards_earned(character, quest_data_dict):
@@ -274,8 +277,16 @@ def get_total_quest_rewards_earned(character, quest_data_dict):
     
     Returns: Dictionary with 'total_xp' and 'total_gold'
     """
-    # TODO: Implement reward calculation
-    # Sum up reward_xp and reward_gold for all completed quests
+    total_xp = 0
+    total_gold = 0
+
+    for quest_id in character.get("completed_quests", []):
+        if quest_id in quest_data_dict:
+            quest = quest_data_dict[quest_id]
+            total_xp += quest.get("reward_xp", 0)
+            total_gold += quest.get("reward_gold", 0)
+
+    return {"total_xp": total_xp, "total_gold": total_gold}
     pass
 
 def get_quests_by_level(quest_data_dict, min_level, max_level):
@@ -284,7 +295,16 @@ def get_quests_by_level(quest_data_dict, min_level, max_level):
     
     Returns: List of quest dictionaries
     """
-    # TODO: Implement level filtering
+    if min_level > max_level:
+        min_level, max_level = max_level, min_level
+
+    quests_in_range = []
+    for quest_id, quest in quest_data_dict.items():
+        required_level = quest.get("required_level")
+        if required_level is not None and min_level <= required_level <= max_level:
+            quests_in_range.append(quest)
+
+    return quests_in_range
     pass
 
 # ============================================================================
