@@ -4,7 +4,7 @@ Combat System Module - Starter Code
 
 Name: Noble McGregor
 
-AI Usage: [Document any AI assistance used]
+AI Usage: AI helped me debug and use more with functions
 
 Handles combat mechanics
 """
@@ -33,9 +33,9 @@ def create_enemy(enemy_type):
     Raises: InvalidTargetError if enemy_type not recognized
     """
     enemy_stats = {
-        "Goblin": {"health": 50, "strength": 8, "magic": 2, "xp_reward": 25, "gold_reward": 10},
-        "Orc": {"health": 80, "strength": 12, "magic": 5, "xp_reward": 50, "gold_reward": 25},
-        "Dragon": {"health": 200, "strength": 25, "magic": 15, "xp_reward": 200, "gold_reward": 100}
+        "goblin": {"health": 50, "strength": 8, "magic": 2, "xp_reward": 25, "gold_reward": 10},
+        "orc": {"health": 80, "strength": 12, "magic": 5, "xp_reward": 50, "gold_reward": 25},
+        "dragon": {"health": 200, "strength": 25, "magic": 15, "xp_reward": 200, "gold_reward": 100}
     }
     enemy_types = enemy_type.lower()
 
