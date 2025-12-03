@@ -1,0 +1,12 @@
+Name: TestHero
+Class: Warrior
+Level: 1
+Health: 150
+Max_Health: 150
+Strength: 20
+Magic: 5
+Experience: 0
+Gold: 100
+Inventory: 
+Active_Quests: 
+Completed_Quests: 

@@ -41,8 +41,11 @@ def create_character(name, character_class):
         "Rogue": {"health": 110, "strength": 10, "magic": 7},
         "Cleric": {"health": 90, "strength": 8, "magic": 10}
     }
-    classes = ["Warrior", "Mage", "Rogue", "cleric"]
-
+    classes = ["Warrior", "Mage", "Rogue", "Cleric"]
+    
+    if character_class not in classes:
+        raise InvalidCharacterClassError(f"{character_class} is not a valid class, please choose 'Warrior', 'Mage', 'Rogue', or 'Cleric' ")
+   
     stats = base_stats[character_class]
     
     character = {
@@ -60,8 +63,7 @@ def create_character(name, character_class):
         "completed_quests": []
     }
     
-    if character_class not in classes:
-        raise InvalidCharacterClassError(f"{character_class} is not a valid class, please choose 'Warrior', 'Mage', 'Rogue', or 'Cleric' ")
+    return character
     pass
 
 def save_character(character, save_directory="data/save_games"):
@@ -106,7 +108,7 @@ def save_character(character, save_directory="data/save_games"):
             file.write(f"Experience: {character['experience']}\n")
             file.write(f"Gold: {character['gold']}\n")
             file.write(f"Inventory: {','.join(character['inventory'])}\n")
-            file.write(f"Active_Quest: {','.join(character['active_quests'])}\n")
+            file.write(f"Active_Quests: {','.join(character['active_quests'])}\n")
             file.write(f"Completed_Quests: {','.join(character['completed_quests'])}\n")
         
         return True
@@ -131,6 +133,8 @@ def load_character(character_name, save_directory="data/save_games"):
     """
 
     file_name = os.path.join(save_directory, f"{character_name}_save.txt")
+    if not os.path.exists(file_name):
+        raise CharacterNotFoundError(f"No save file found for {character_name}")
     try:
         with open(file_name, "r", encoding="utf-8") as file:
             lines = file.readlines()
@@ -236,7 +240,7 @@ def gain_experience(character, xp_amount):
         character["max_health"] += 10
         character["strength"] += 2
         character["magic"] += 2
-        character["health"] += character["max_health"]
+        character["health"] = character["max_health"]
 
     return character
     pass
@@ -343,26 +347,26 @@ if __name__ == "__main__":
     print("=== CHARACTER MANAGER TEST ===")
     
     # Test character creation
-    # try:
-    #     char = create_character("TestHero", "Warrior")
-    #     print(f"Created: {char['name']} the {char['class']}")
-    #     print(f"Stats: HP={char['health']}, STR={char['strength']}, MAG={char['magic']}")
-    # except InvalidCharacterClassError as e:
-    #     print(f"Invalid class: {e}")
+    try:
+        char = create_character("TestHero", "Warrior")
+        print(f"Created: {char['name']} the {char['class']}")
+        print(f"Stats: HP={char['health']}, STR={char['strength']}, MAG={char['magic']}")
+    except InvalidCharacterClassError as e:
+        print(f"Invalid class: {e}")
     
     # Test saving
-    # try:
-    #     save_character(char)
-    #     print("Character saved successfully")
-    # except Exception as e:
-    #     print(f"Save error: {e}")
+    try:
+       save_character(char)
+       print("Character saved successfully")
+    except Exception as e:
+        print(f"Save error: {e}")
     
     # Test loading
-    # try:
-    #     loaded = load_character("TestHero")
-    #     print(f"Loaded: {loaded['name']}")
-    # except CharacterNotFoundError:
-    #     print("Character not found")
-    # except SaveFileCorruptedError:
-    #     print("Save file corrupted")
+    try:
+       loaded = load_character("TestHero")
+       print(f"Loaded: {loaded['name']}")
+    except CharacterNotFoundError:
+       print("Character not found")
+    except SaveFileCorruptedError:
+       print("Save file corrupted")
 
