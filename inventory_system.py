@@ -397,7 +397,7 @@ def sell_item(character, item_id, item_data):
 
     inventory.remove(item_id)
 
-    sell_value = item_data.get("cost", 0) // 2
+    sell_value = item_data_dict.get("cost", 0) // 2
     character["gold"] = character.get("gold", 0) + sell_value
     return sell_value
     pass
