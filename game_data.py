@@ -189,6 +189,7 @@ def validate_quest_data(quest_dict):
     return True
     pass
 
+
 def validate_item_data(item_dict):
     """
     Validate that item dictionary has all required fields
@@ -199,7 +200,31 @@ def validate_item_data(item_dict):
     Returns: True if valid
     Raises: InvalidDataFormatError if missing required fields or invalid type
     """
-    # TODO: Implement validation
+    required_fields = ["item_id", "name", "type", "effect", "cost", "description"]
+    for field in required_fields:
+        if field not in item_dict:
+            raise InvalidDataFormatError(f"Missing field: {field}")
+
+    valid_items = ["weapon", "armor", "consumable"]
+    if item_dict["type"].lower() not in valid_items:
+        raise InvalidDataFormatError(f"Invalid item type: {item_dict['type']}")
+
+    if not isinstance(item_dict["cost"], int):
+        raise InvalidDataFormatError("Cost has to be an integer")
+
+    if not isinstance(item_dict["effect"], str):
+        raise InvalidDataFormatError("Effect must be a string in 'stat:value' format")
+    if ":" not in item_dict["effect"]:
+        raise InvalidDataFormatError("Effect must be in 'stat:value' format")
+
+    stat, value_str = item_dict["effect"].split(":", 1)
+    try:
+        int(value_str.strip())
+    except ValueError:
+        raise InvalidDataFormatError("Effect value must be an integer")
+
+    return True
+
     pass
 
 def create_default_data_files():
@@ -207,10 +232,50 @@ def create_default_data_files():
     Create default data files if they don't exist
     This helps with initial setup and testing
     """
-    # TODO: Implement this function
-    # Create data/ directory if it doesn't exist
-    # Create default quests.txt and items.txt files
-    # Handle any file permission errors appropriately
+    try:
+        if not os.path.exists("data"):
+            os.makedirs("data")
+            quests_file = "data/quests.txt"
+            if not os.path.exists(quests_file):
+                with open(quests_file, "w", encoding="utf-8") as f:
+                    f.write(
+                        "QUEST_ID: goblin_hunt"
+                        "TITLE: Hunt the Goblins"
+                        "DESCRIPTION: Defeat 5 goblins near the village"
+                        "REWARD_XP: 100"
+                        "REWARD_GOLD: 50"
+                        "REQUIRED_LEVEL: 1"
+                        "PREREQUISITE: NONE"
+                        "QUEST_ID: dragon_slayer"
+                        "TITLE: Slay the Dragon"
+                        "DESCRIPTION: Defeat the mighty dragon"
+                        "REWARD_XP: 500"
+                        "REWARD_GOLD: 200"
+                        "REQUIRED_LEVEL: 5"
+                        "PREREQUISITE: goblin_hunt"
+                    )
+
+        items_file = "data/items.txt"
+        if not os.path.exists(items_file):
+            with open(items_file, "w", encoding="utf-8") as f:
+                f.write(
+                    "ITEM_ID: sword_iron"
+                    "NAME: Iron Sword"
+                    "TYPE: weapon"
+                    "EFFECT: strength:5"
+                    "COST: 100"
+                    "DESCRIPTION: An iron sword."
+                    "ITEM_ID: potion_small"
+                    "NAME: Small Health Potion"
+                    "TYPE: consumable"
+                    "EFFECT: health:20"
+                    "COST: 50"
+                    "DESCRIPTION: Restores a small amount of health."
+                )
+
+    except (PermissionError, OSError) as e:
+        raise CorruptedDataError(f"Error creating default data file: {e}")
+
     pass
 
 # ============================================================================
