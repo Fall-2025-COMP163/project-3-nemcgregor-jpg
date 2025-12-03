@@ -317,10 +317,15 @@ def display_quest_info(quest_data):
     
     Shows: Title, Description, Rewards, Requirements
     """
-    # TODO: Implement quest display
-    print(f"\n=== {quest_data['title']} ===")
+    print(f"=== {quest_data['title']} ===")
     print(f"Description: {quest_data['description']}")
-    # ... etc
+    print(f"Rewards: {quest_data['reward_xp']} XP, {quest_data['reward_gold']} Gold")
+    print(f"Required Level: {quest_data['required_level']}")
+    prereq = quest_data.get("prerequisite")
+    if prereq and prereq != "NONE":
+        print(f"Prerequisite: {prereq}")
+    else:
+        print("Prerequisite: None")
     pass
 
 def display_quest_list(quest_list):
@@ -329,7 +334,10 @@ def display_quest_list(quest_list):
     
     Shows: Title, Required Level, Rewards
     """
-    # TODO: Implement quest list display
+    print("QUEST LIST")
+    for quest in quest_list:
+        print(f"- {quest['title']} (Level {quest['required_level']}) "
+              f"=> {quest['reward_xp']} XP, {quest['reward_gold']} Gold")
     pass
 
 def display_character_quest_progress(character, quest_data_dict):
@@ -342,7 +350,16 @@ def display_character_quest_progress(character, quest_data_dict):
     - Completion percentage
     - Total rewards earned
     """
-    # TODO: Implement progress display
+    active_count = len(character.get("active_quests", []))
+    completed_count = len(character.get("completed_quests", []))
+    total_percentage = get_quest_completion_percentage(character, quest_data_dict)
+    rewards = get_total_quest_rewards_earned(character, quest_data_dict)
+
+    print("QUEST PROGRESS")
+    print(f"Active Quests: {active_count}")
+    print(f"Completed Quests: {completed_count}")
+    print(f"Completion Percentage: {total_percentage:.2f}%")
+    print(f"Total Rewards Earned: {rewards['total_xp']} XP, {rewards['total_gold']} Gold")
     pass
 
 # ============================================================================
