@@ -125,12 +125,37 @@ def use_item(character, item_id, item_data):
         ItemNotFoundError if item not in inventory
         InvalidItemTypeError if item type is not 'consumable'
     """
-    # TODO: Implement item usage
-    # Check if character has the item
-    # Check if item type is 'consumable'
-    # Parse effect (format: "stat_name:value" e.g., "health:20")
-    # Apply effect to character
-    # Remove item from inventory
+    inventory = character.get("inventory", [])
+    if item_id not in inventory:
+        raise ItemNotFoundError(f"Item {item_id} not found in inventory")
+
+    # item_data is already the dict for this item
+    item = item_data
+    if item.get("type", "").lower() != "consumable":
+        raise InvalidItemTypeError(f"Item {item_id} is not consumable")
+
+    effect_str = item.get("effect")
+    if not effect_str or ":" not in effect_str:
+        raise InvalidItemTypeError(f"Invalid effect format for item {item_id}")
+
+    stat, value_str = effect_str.split(":", 1)
+    stat = stat.strip().lower()
+    try:
+        value = int(value_str.strip())
+    except ValueError:
+        raise InvalidItemTypeError(f"Invalid numeric value effect for item {item_id}")
+
+    if stat == "health":
+        character["health"] = min(
+            character.get("health", 0) + value,
+            character.get("max_health", character.get("health", 0))
+        )
+    else:
+        character[stat] = character.get(stat, 0) + value
+
+    inventory.remove(item_id)
+    return f'{character.get("name","Unknown")} used {item.get("name", item_id)} and gained {value} {stat}.'
+
     pass
 
 def equip_weapon(character, item_id, item_data):
@@ -153,12 +178,41 @@ def equip_weapon(character, item_id, item_data):
         ItemNotFoundError if item not in inventory
         InvalidItemTypeError if item type is not 'weapon'
     """
-    # TODO: Implement weapon equipping
-    # Check item exists and is type 'weapon'
-    # Handle unequipping current weapon if exists
-    # Parse effect and apply to character stats
-    # Store equipped_weapon in character dictionary
-    # Remove item from inventory
+    inventory = character.get("inventory", [])
+    if item_id not in inventory:
+        raise ItemNotFoundError(f"Item {item_id} not found in inventory")
+
+    item = item_data
+    if item.get("type", "").lower() != "weapon":
+        raise InvalidItemTypeError(f"Item {item_id} is not a weapon")
+
+    if character.get("equipped_weapon"):
+        old_weapon_id = character["equipped_weapon"]
+        old_effect = character.get("equipped_weapon_effect")
+        if old_effect:
+            stat, value_str = old_effect.split(":", 1)
+            stat = stat.strip().lower()
+            character[stat] -= int(value_str.strip())
+        inventory.append(old_weapon_id)
+
+    effect_str = item.get("effect")
+    if not effect_str or ":" not in effect_str:
+        raise InvalidItemTypeError(f"Invalid effect format for weapon {item_id}")
+
+    stat, value_str = effect_str.split(":", 1)
+    stat = stat.strip().lower()
+    try:
+        value = int(value_str.strip())
+    except ValueError:
+        raise InvalidItemTypeError(f"Invalid value effect for weapon {item_id}")
+
+    character[stat] = character.get(stat, 0) + value
+    character["equipped_weapon"] = item_id
+    character["equipped_weapon_effect"] = effect_str
+
+    inventory.remove(item_id)
+    return f'{character.get("name","Unknown")} equipped {item.get("name", item_id)} (+{value} {stat}).'
+
     pass
 
 def equip_armor(character, item_id, item_data):
