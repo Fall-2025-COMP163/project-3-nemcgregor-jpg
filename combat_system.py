@@ -185,13 +185,20 @@ class SimpleBattle:
             raise CombatNotActiveError("Cannot take action, combat is not active")
         print("Enemy's Turn")
         damage = self.enemy["strength"]
-
-        # TODO: Implement enemy turn
-        # Check combat is active
-        # Calculate damage
-        # Apply to character
+        self.character["health"] -= damage
+        print(f"{self.enemy['name']} dealth {damage} to {self.character['name']}")
+        if self.character["health"] <= 0:
+            self.combat_active = False
+            print(f"{self.character['name']} has been defeated!")
+            return {
+                f"{self.character["name"]} has lost the battle"
+                "You gained: 0 xp"
+                "You gained: 0 gold"
+            }
+        self.turn_counter += 1
         pass
     
+
     def calculate_damage(self, attacker, defender):
         """
         Calculate damage from attack
@@ -201,7 +208,9 @@ class SimpleBattle:
         
         Returns: Integer damage amount
         """
-        # TODO: Implement damage calculation
+        damage = attacker["strength"] - (defender["strength"] // 4)
+        return max(damage, 1)
+        
         pass
     
     def apply_damage(self, target, damage):
@@ -210,7 +219,11 @@ class SimpleBattle:
         
         Reduces health, prevents negative health
         """
-        # TODO: Implement damage application
+        target["health"] -= damage
+        if target["health"] < 0:
+            target["health"] = 0
+        return target["health"]
+        
         pass
     
     def check_battle_end(self):
@@ -219,7 +232,13 @@ class SimpleBattle:
         
         Returns: 'player' if enemy dead, 'enemy' if character dead, None if ongoing
         """
-        # TODO: Implement battle end check
+        if self.enemy["health"] <= 0:
+            return "player"
+        elif self.player['health'] <= 0:
+            return "enemy"
+        else:
+            return None
+            
         pass
     
     def attempt_escape(self):
