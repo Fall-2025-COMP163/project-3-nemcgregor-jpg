@@ -4,7 +4,7 @@ Inventory System Module - Starter Code
 
 Name: Noble McGregor
 
-AI Usage: [Document any AI assistance used]
+AI Usage: AI helped me debug and how to set up lists and dictionaries that can be interacted with
 
 This module handles inventory management, item usage, and equipment.
 """
@@ -34,9 +34,13 @@ def add_item_to_inventory(character, item_id):
     Returns: True if added successfully
     Raises: InventoryFullError if inventory is at max capacity
     """
-    # TODO: Implement adding items
-    # Check if inventory is full (>= MAX_INVENTORY_SIZE)
-    # Add item_id to character['inventory'] list
+    inventory = character.setdefault("inventory", [])
+
+    if len(inventory) >= MAX_INVENTORY_SIZE:
+        raise InventoryFullError("Inventory is full")
+
+    inventory.append(item_id)
+    return True
     pass
 
 def remove_item_from_inventory(character, item_id):
@@ -50,9 +54,13 @@ def remove_item_from_inventory(character, item_id):
     Returns: True if removed successfully
     Raises: ItemNotFoundError if item not in inventory
     """
-    # TODO: Implement item removal
-    # Check if item exists in inventory
-    # Remove item from list
+    inventory = character.get("inventory", [])
+    if item_id not in inventory:
+        raise ItemNotFoundError(f"Item {item_id} not found in inventory")
+
+    inventory.remove(item_id)
+    return True
+
     pass
 
 def has_item(character, item_id):
