@@ -2,9 +2,9 @@
 COMP 163 - Project 3: Quest Chronicles
 Quest Handler Module - Starter Code
 
-Name: [Your Name Here]
+Name: Noble McGregor
 
-AI Usage: [Document any AI assistance used]
+AI Usage: AI helped me debug and with how to use empty lists and dictionaries
 
 This module handles quest management, dependencies, and completion.
 """
@@ -16,7 +16,7 @@ from custom_exceptions import (
     QuestNotActiveError,
     InsufficientLevelError
 )
-
+import character_manager
 # ============================================================================
 # QUEST MANAGEMENT
 # ============================================================================
@@ -43,13 +43,34 @@ def accept_quest(character, quest_id, quest_data_dict):
         QuestRequirementsNotMetError if prerequisite not completed
         QuestAlreadyCompletedError if quest already done
     """
-    # TODO: Implement quest acceptance
-    # Check quest exists
-    # Check level requirement
-    # Check prerequisite (if not "NONE")
-    # Check not already completed
-    # Check not already active
-    # Add to character['active_quests']
+    if quest_id not in quest_data_dict:
+        raise QuestNotFoundError(f"Quest {quest_id} not found")
+
+    quest = quest_data_dict[quest_id]
+
+    if character["level"] < quest["required_level"]:
+        raise InsufficientLevelError(
+        f'{character.get("name","Unknown")} is level {character["level"]} but needs level {quest["required_level"]}'
+    )
+
+
+    prereq = quest.get("prerequisite")
+    if prereq and prereq != "NONE":
+        if prereq not in character.get("completed_quests", []):
+            raise QuestRequirementsNotMetError(
+                f"Prerequisite quest {prereq} not completed"
+            )
+
+    if quest_id in character.get("completed_quests", []):
+        raise QuestAlreadyCompletedError(f"Quest {quest_id} already completed")
+
+    if quest_id in character.get("active_quests", []):
+        raise QuestRequirementsNotMetError(f"Quest {quest_id} is already active")
+
+    character.setdefault("active_quests", []).append(quest_id)
+
+    return True
+    
     pass
 
 def complete_quest(character, quest_id, quest_data_dict):
@@ -70,13 +91,23 @@ def complete_quest(character, quest_id, quest_data_dict):
         QuestNotFoundError if quest_id not in quest_data_dict
         QuestNotActiveError if quest not in active_quests
     """
-    # TODO: Implement quest completion
-    # Check quest exists
-    # Check quest is active
-    # Remove from active_quests
-    # Add to completed_quests
-    # Grant rewards (use character_manager.gain_experience and add_gold)
-    # Return reward summary
+    if quest_id not in quest_data_dict:
+        raise QuestNotFoundError(f"Quest {quest_id} not found")
+
+    quest = quest_data_dict[quest_id]
+
+    if quest_id not in character.get("active_quests", []):
+        raise QuestNotActiveError(f"Quest {quest_id} is not active")
+
+    character["active_quests"].remove(quest_id)
+
+    character.setdefault("completed_quests", []).append(quest_id)
+
+    xp_reward = quest["reward_xp"]
+    gold_reward = quest["reward_gold"]
+
+    character_manager.gain_experience(character, xp_reward)
+    character_manager.add_gold(character, gold_reward)
     pass
 
 def abandon_quest(character, quest_id):
