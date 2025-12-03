@@ -100,15 +100,11 @@ def clear_inventory(character):
     inventory = character.get("inventory", [])
     removed_items = list(inventory)
     character["inventory"] = []
-<<<<<<< HEAD
 
     return removed_items
     pass
-=======
->>>>>>> df9dc87c2d72db72564344083843e99350feb74d
 
-    return removed_items
-    pass
+    
 
 # ============================================================================
 # ITEM USAGE
@@ -420,30 +416,15 @@ def parse_item_effect(effect_string):
     Returns: Tuple of (stat_name, value)
     Example: "health:20" → ("health", 20)
     """
-<<<<<<< HEAD
-    if "inventory" not in character:
-        character["inventory"] = []
-    inventory = character["inventory"]
 
-    cost = item_data.get("cost", 0)
+    if ":" not in effect_string:
+        raise InvalidItemTypeError(f"Invalid effect format: {effect_string}")
 
-    if character.get("gold", 0) < cost:
-        raise InsufficientResourcesError(
-            f"Not enough gold to purchase {item_data.get('name', item_id)}"
-        )
 
-    if len(inventory) >= MAX_INVENTORY_SIZE:
-        raise InventoryFullError("Inventory is full")
 
-    character["gold"] -= cost
-    inventory.append(item_id)
-
-    return True
-=======
     stat_name, value_str = effect_string.split(":", 1)
     value = int(value_str.strip())
     return stat_name.strip().lower(), value
->>>>>>> df9dc87c2d72db72564344083843e99350feb74d
     pass
 
 def apply_stat_effect(character, stat_name, value):
@@ -476,7 +457,6 @@ def display_inventory(character, item_data_dict):
     
     Shows item names, types, and quantities
     """
-<<<<<<< HEAD
     if "inventory" not in character:
         character["inventory"] = []
     inventory = character["inventory"]
@@ -488,8 +468,8 @@ def display_inventory(character, item_data_dict):
 
     sell_value = item_data.get("cost", 0) // 2
     character["gold"] = character.get("gold", 0) + sell_value
-    return sell_value
-=======
+    
+    
     inventory = character.get("inventory", [])
     if not inventory:
         print(f"{character.get('name', 'Unknown')} has an empty inventory.")
@@ -513,7 +493,7 @@ def display_inventory(character, item_data_dict):
         print(f"{item_name} ({item_type}) x{count}")
 
     print("-" * 40)
->>>>>>> df9dc87c2d72db72564344083843e99350feb74d
+    return sell_value
     pass
 
 # ============================================================================
