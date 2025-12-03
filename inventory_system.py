@@ -4,7 +4,7 @@ Inventory System Module - Starter Code
 
 Name: Noble McGregor
 
-AI Usage: AI helped me debug and how to set up lists and dictionaries that can be interacted with
+AI Usage: AI helped me debug and how to set up lists and dictionaries that can be changed
 
 This module handles inventory management, item usage, and equipment.
 """
@@ -103,6 +103,7 @@ def clear_inventory(character):
 
     return removed_items
     pass
+
 # ============================================================================
 # ITEM USAGE
 # ============================================================================
@@ -339,6 +340,70 @@ def unequip_armor(character):
 # SHOP SYSTEM
 # ============================================================================
 
+def purchase_item(character, item_id, item_data):
+    """
+    Purchase an item from a shop
+    
+    Args:
+        character: Character dictionary
+        item_id: Item to purchase
+        item_data: Item information with 'cost' field
+    
+    Returns: True if purchased successfully
+    Raises:
+        InsufficientResourcesError if not enough gold
+        InventoryFullError if inventory is full
+    """
+    if "inventory" not in character:
+        character["inventory"] = []
+    inventory = character["inventory"]
+
+    cost = item_data.get("cost", 0)
+
+    if character.get("gold", 0) < cost:
+        raise InsufficientResourcesError(
+            f"Not enough gold to purchase {item_data.get('name', item_id)}"
+        )
+
+    if len(inventory) >= MAX_INVENTORY_SIZE:
+        raise InventoryFullError("Inventory is full")
+
+    character["gold"] -= cost
+    inventory.append(item_id)
+
+    return True
+    pass
+
+def sell_item(character, item_id, item_data):
+    """
+    Sell an item for half its purchase cost
+    
+    Args:
+        character: Character dictionary
+        item_id: Item to sell
+        item_data: Item information with 'cost' field
+    
+    Returns: Amount of gold received
+    Raises: ItemNotFoundError if item not in inventory
+    """
+    if "inventory" not in character:
+        character["inventory"] = []
+    inventory = character["inventory"]
+
+    if item_id not in inventory:
+        raise ItemNotFoundError(f"Item {item_id} not in inventory")
+
+    inventory.remove(item_id)
+
+    sell_value = item_data.get("cost", 0) // 2
+    character["gold"] = character.get("gold", 0) + sell_value
+    return sell_value
+    pass
+
+# ============================================================================
+# HELPER FUNCTIONS
+# ============================================================================
+
 def parse_item_effect(effect_string):
     """
     Parse item effect string into stat name and value
@@ -410,53 +475,6 @@ def display_inventory(character, item_data_dict):
     pass
 
 # ============================================================================
-# HELPER FUNCTIONS
-# ============================================================================
-
-def parse_item_effect(effect_string):
-    """
-    Parse item effect string into stat name and value
-    
-    Args:
-        effect_string: String in format "stat_name:value"
-    
-    Returns: Tuple of (stat_name, value)
-    Example: "health:20" → ("health", 20)
-    """
-    # TODO: Implement effect parsing
-    # Split on ":"
-    # Convert value to integer
-    pass
-
-def apply_stat_effect(character, stat_name, value):
-    """
-    Apply a stat modification to character
-    
-    Valid stats: health, max_health, strength, magic
-    
-    Note: health cannot exceed max_health
-    """
-    # TODO: Implement stat application
-    # Add value to character[stat_name]
-    # If stat is health, ensure it doesn't exceed max_health
-    pass
-
-def display_inventory(character, item_data_dict):
-    """
-    Display character's inventory in formatted way
-    
-    Args:
-        character: Character dictionary
-        item_data_dict: Dictionary of all item data
-    
-    Shows item names, types, and quantities
-    """
-    # TODO: Implement inventory display
-    # Count items (some may appear multiple times)
-    # Display with item names from item_data_dict
-    pass
-
-# ============================================================================
 # TESTING
 # ============================================================================
 
@@ -464,24 +482,24 @@ if __name__ == "__main__":
     print("=== INVENTORY SYSTEM TEST ===")
     
     # Test adding items
-    # test_char = {'inventory': [], 'gold': 100, 'health': 80, 'max_health': 80}
+    test_char = {'inventory': [], 'gold': 100, 'health': 80, 'max_health': 80}
     # 
-    # try:
-    #     add_item_to_inventory(test_char, "health_potion")
-    #     print(f"Inventory: {test_char['inventory']}")
-    # except InventoryFullError:
-    #     print("Inventory is full!")
+    try:
+       add_item_to_inventory(test_char, "health_potion")
+       print(f"Inventory: {test_char['inventory']}")
+    except InventoryFullError:
+       print("Inventory is full!")
     
     # Test using items
-    # test_item = {
-    #     'item_id': 'health_potion',
-    #     'type': 'consumable',
-    #     'effect': 'health:20'
-    # }
+    test_item = {
+       'item_id': 'health_potion',
+       'type': 'consumable',
+       'effect': 'health:20'
+    }
     # 
-    # try:
-    #     result = use_item(test_char, "health_potion", test_item)
-    #     print(result)
-    # except ItemNotFoundError:
-    #     print("Item not found")
+    try:
+       result = use_item(test_char, "health_potion", test_item)
+       print(result)
+    except ItemNotFoundError:
+        print("Item not found")
 
