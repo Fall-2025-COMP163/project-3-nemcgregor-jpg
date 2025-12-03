@@ -189,7 +189,6 @@ def validate_quest_data(quest_dict):
     return True
     pass
 
-
 def validate_item_data(item_dict):
     """
     Validate that item dictionary has all required fields

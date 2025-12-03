@@ -343,6 +343,7 @@ def cleric_heal(character):
     character["health"] = health
     return f"{character["name"]} used heal, {healing} health was restored."
     pass
+
 # ============================================================================
 # COMBAT UTILITIES
 # ============================================================================

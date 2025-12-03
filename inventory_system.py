@@ -4,7 +4,7 @@ Inventory System Module - Starter Code
 
 Name: Noble McGregor
 
-AI Usage: AI helped me debug and how to set up lists and dictionaries that can be interacted with
+AI Usage: AI helped me debug and how to set up lists and dictionaries that can be changed
 
 This module handles inventory management, item usage, and equipment.
 """
@@ -109,6 +109,7 @@ def clear_inventory(character):
 
     return removed_items
     pass
+
 # ============================================================================
 # ITEM USAGE
 # ============================================================================
@@ -343,6 +344,70 @@ def unequip_armor(character):
 
 # ============================================================================
 # SHOP SYSTEM
+# ============================================================================
+
+def purchase_item(character, item_id, item_data):
+    """
+    Purchase an item from a shop
+    
+    Args:
+        character: Character dictionary
+        item_id: Item to purchase
+        item_data: Item information with 'cost' field
+    
+    Returns: True if purchased successfully
+    Raises:
+        InsufficientResourcesError if not enough gold
+        InventoryFullError if inventory is full
+    """
+    if "inventory" not in character:
+        character["inventory"] = []
+    inventory = character["inventory"]
+
+    cost = item_data.get("cost", 0)
+
+    if character.get("gold", 0) < cost:
+        raise InsufficientResourcesError(
+            f"Not enough gold to purchase {item_data.get('name', item_id)}"
+        )
+
+    if len(inventory) >= MAX_INVENTORY_SIZE:
+        raise InventoryFullError("Inventory is full")
+
+    character["gold"] -= cost
+    inventory.append(item_id)
+
+    return True
+    pass
+
+def sell_item(character, item_id, item_data):
+    """
+    Sell an item for half its purchase cost
+    
+    Args:
+        character: Character dictionary
+        item_id: Item to sell
+        item_data: Item information with 'cost' field
+    
+    Returns: Amount of gold received
+    Raises: ItemNotFoundError if item not in inventory
+    """
+    if "inventory" not in character:
+        character["inventory"] = []
+    inventory = character["inventory"]
+
+    if item_id not in inventory:
+        raise ItemNotFoundError(f"Item {item_id} not in inventory")
+
+    inventory.remove(item_id)
+
+    sell_value = item_data.get("cost", 0) // 2
+    character["gold"] = character.get("gold", 0) + sell_value
+    return sell_value
+    pass
+
+# ============================================================================
+# HELPER FUNCTIONS
 # ============================================================================
 
 def parse_item_effect(effect_string):
