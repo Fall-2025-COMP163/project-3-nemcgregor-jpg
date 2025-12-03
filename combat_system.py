@@ -113,8 +113,8 @@ class SimpleBattle:
             if self.enemy["health"] <= 0:
                 self.combat_active = False
                 return {
-                    f"{self.character["name"]} has won the battle"
-                    f"You gained: {self.enemy["xp_reward"]} xp"
+                    f"{self.character["name"]} has won the battle\n"
+                    f"You gained: {self.enemy["xp_reward"]} xp\n"
                     f"You gained: {self.enemy["gold_reward"]} gold"
                 }
             
