@@ -353,7 +353,13 @@ def can_character_fight(character):
     
     Returns: True if health > 0 and not in battle
     """
-    # TODO: Implement fight check
+    if character.get("health", 0) <= 0:
+        return False
+    
+    if character.get("combat_active", False):
+        return False
+    
+    return True
     pass
 
 def get_victory_rewards(enemy):
@@ -362,7 +368,11 @@ def get_victory_rewards(enemy):
     
     Returns: Dictionary with 'xp' and 'gold'
     """
-    # TODO: Implement reward calculation
+    return {
+        "xp": enemy.get("xp_reward", 0),
+        "gold": enemy.get("gold_reward", 0)
+    }
+
     pass
 
 def display_combat_stats(character, enemy):
@@ -371,7 +381,21 @@ def display_combat_stats(character, enemy):
     
     Shows both character and enemy health/stats
     """
-    # TODO: Implement status display
+    print("IN COMBAT")
+    print(f"{character["name"]} (Character)")
+    print(f"HP: {character["health"]}/{character["max_health"]}")
+    print(f"Strength: {character.get("strength")}")
+    print(f"Magic: {character.get("magic")}")
+
+    print("vs")
+    
+    print(f"{enemy["name"]} (Enemy)")
+    print(f"HP: {enemy["health"]}/{enemy["max_health"]}")
+    print(f"Strength: {enemy.get("strength")}")
+    print(f"Magic: {enemy.get("magic")}")
+
+
+
     print(f"\n{character['name']}: HP={character['health']}/{character['max_health']}")
     print(f"{enemy['name']}: HP={enemy['health']}/{enemy['max_health']}")
     pass
@@ -380,7 +404,7 @@ def display_battle_log(message):
     """
     Display a formatted battle message
     """
-    # TODO: Implement battle log display
+    print("BATTLE LOG")
     print(f">>> {message}")
     pass
 
