@@ -187,7 +187,7 @@ def is_quest_completed(character, quest_id):
     
     Returns: True if completed, False otherwise
     """
-    # TODO: Implement completion check
+    return quest_id in character.get("completed_quests", [])
     pass
 
 def is_quest_active(character, quest_id):
@@ -196,7 +196,7 @@ def is_quest_active(character, quest_id):
     
     Returns: True if active, False otherwise
     """
-    # TODO: Implement active check
+    return quest_id in character.get("active_quests", [])
     pass
 
 def can_accept_quest(character, quest_id, quest_data_dict):
@@ -206,8 +206,23 @@ def can_accept_quest(character, quest_id, quest_data_dict):
     Returns: True if can accept, False otherwise
     Does NOT raise exceptions - just returns boolean
     """
-    # TODO: Implement requirement checking
-    # Check all requirements without raising exceptions
+    if quest_id not in quest_data_dict:
+        return False
+
+    quest = quest_data_dict[quest_id]
+
+    if character["level"] < quest["required_level"]:
+        return False
+    prereq = quest.get("prerequisite")
+    if prereq and prereq != "NONE":
+        if prereq not in character.get("completed_quests", []):
+            return False
+    if quest_id in character.get("completed_quests", []):
+        return False
+    if quest_id in character.get("active_quests", []):
+        return False
+
+    return True
     pass
 
 def get_quest_prerequisite_chain(quest_id, quest_data_dict):
@@ -220,9 +235,21 @@ def get_quest_prerequisite_chain(quest_id, quest_data_dict):
     
     Raises: QuestNotFoundError if quest doesn't exist
     """
-    # TODO: Implement prerequisite chain tracing
-    # Follow prerequisite links backwards
-    # Build list in reverse order
+    if quest_id not in quest_data_dict:
+        raise QuestNotFoundError(f"Quest {quest_id} not found")
+
+    chain = []
+    current_id = quest_id
+
+    while current_id and current_id != "NONE":
+        if current_id not in quest_data_dict:
+            raise QuestNotFoundError(f"Quest {current_id} not found in quest data")
+        
+        chain.insert(0, current_id)  
+        prereq = quest_data_dict[current_id].get("prerequisite")
+        current_id = prereq if prereq and prereq != "NONE" else None
+
+    return chain
     pass
 
 # ============================================================================
