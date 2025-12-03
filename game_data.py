@@ -89,6 +89,7 @@ def load_quests(filename="data/quests.txt"):
     
     return quests
     pass
+
 def load_items(filename="data/items.txt"):
     """
     Load item data from file
@@ -104,9 +105,60 @@ def load_items(filename="data/items.txt"):
     Returns: Dictionary of items {item_id: item_data_dict}
     Raises: MissingDataFileError, InvalidDataFormatError, CorruptedDataError
     """
-    # TODO: Implement this function
-    # Must handle same exceptions as load_quests
+    try:
+        with open(filename, "r", encoding="utf-8") as f:
+            file = f.read()
+    except FileNotFoundError:
+        raise MissingDataFileError(f"Item file {filename} not found")
+    except (PermissionError, OSError):
+        raise CorruptedDataError(f"Item file {filename} is corrupted or unreadable")
+
+    sections = [section.strip() for section in file.split("\n\n") if section.strip()]
+    items = {}
+    for section in sections:
+        data = {}
+        try:
+            for line in section.splitlines():
+                if ":" not in line:
+                    raise InvalidDataFormatError(f"Invalid line format: {line}")
+                key, value = line.split(":", 1)
+                key = key.strip().upper()
+                value = value.strip()
+
+                if key == "ITEM_ID":
+                    item_id = value
+                    data["item_id"] = value
+                elif key == "NAME":
+                    data["name"] = value
+                elif key == "TYPE":
+                    if value.lower() not in ["weapon", "armor", "consumable"]:
+                        raise InvalidDataFormatError(f"Invalid item type: {value}")
+                    data["type"] = value.lower()
+                elif key == "EFFECT":
+                    if ":" not in value:
+                        raise InvalidDataFormatError(f"Invalid effect format: {value}")
+                    stat, amount = value.split(":", 1)
+                    data["effect"] = {stat.strip().lower(): int(amount.strip())}
+                elif key == "COST":
+                    data["cost"] = int(value)
+                elif key == "DESCRIPTION":
+                    data["description"] = value
+                else:
+                    raise InvalidDataFormatError(f"Not a real field: {key}")
+            fields = ["item_id", "name", "type", "effect", "cost", "description"]
+            for field in fields:
+                if field not in data:
+                    raise InvalidDataFormatError(f"Missing field: {field}")
+            
+            items[item_id] = data
+
+        except ValueError:
+            raise InvalidDataFormatError("Invalid data format")
+        except Exception as e:
+            raise CorruptedDataError(f"Corrupted Data error: {e}")
+    return items
     pass
+
 
 def validate_quest_data(quest_dict):
     """
@@ -118,9 +170,23 @@ def validate_quest_data(quest_dict):
     Returns: True if valid
     Raises: InvalidDataFormatError if missing required fields
     """
-    # TODO: Implement validation
-    # Check that all required keys exist
-    # Check that numeric values are actually numbers
+    required_fields = [
+        "quest_id", "title", "description",
+        "reward_xp", "reward_gold", "required_level", "prerequisite"
+    ]
+    for field in required_fields:
+        if field not in quest_dict:
+            raise InvalidDataFormatError(f"Missing field: {field}")
+
+    int_fields = ["reward_xp", "reward_gold", "required_level"]
+    for field in int_fields:
+        if not isinstance(quest_dict[field], int):
+            raise InvalidDataFormatError(f"Field {field} must be an integer")
+
+    if quest_dict["prerequisite"] is not None and not isinstance(quest_dict["prerequisite"], str):
+        raise InvalidDataFormatError("Prerequisite must be a string or None")
+
+    return True
     pass
 
 def validate_item_data(item_dict):
